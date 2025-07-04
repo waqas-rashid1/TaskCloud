@@ -113,3 +113,16 @@ app.patch("/api/tasks/:id/toggle", (req, res) => {
   res.json(tasks[taskIndex]);
 });
 
+// get /api/stats (Get task statistics)
+app.get("/api/stats", (req, res) => {
+  const total = tasks.length
+  const completed = tasks.filter((t) => t.completed).length
+  const pending = tasks.filter((t) => !t.completed).length
+  const overdue = tasks.filter((t) => !t.completed && t.deadline && new Date(t.deadline) < new Date()).length
+
+  res.json({ total, completed, pending, overdue })
+})
+
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`)
+})
