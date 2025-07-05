@@ -6,6 +6,7 @@ import FilterBar from "../components/FilterBar"
 import Sidebar from "../components/SiderBar"
 import TaskList from "../components/TaskList"
 import { taskService } from "../services/taskService"
+import "../index.css" 
 
 const Dashboard = () => {
   const [tasks, setTasks] = useState([])
@@ -96,7 +97,7 @@ const Dashboard = () => {
             display: "grid",
             gridTemplateColumns: "300px 1fr",
             gap: "32px",
-            "@media (max-width: 768px)": {
+            "@media (maxWidth: 768px)": {
               gridTemplateColumns: "1fr",
               gap: "24px",
             },

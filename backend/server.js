@@ -5,6 +5,21 @@ const { v4: uuidv4 } = require("uuid");
 const app = express();
 const PORT = 5000;
 
+const mysql = require("mysql2");
+
+const db = mysql.createConnection({
+  host: "localhost",
+  user: "root",
+  password: "",
+  database: "taskcloud",
+});
+
+// DB connection
+db.connect((err) => {
+  if (err) throw err;
+  console.log("✅ Connected to MySQL database");
+});
+
 app.use(cors());
 app.use(express.json());
 
@@ -22,67 +37,70 @@ app.listen(PORT, () => {
 });
 
 // dummy data for tasks
-const tasks = [
-  {
-    id: "1",
-    title: "testing task",
-    description: "testng task description",
-    category: "work",
-    deadline: "2024-01-15T10:00:00",
-    completed: false,
-    priority: "high",
-    createdAt: "2024-01-10T08:00:00",
-  },
-];
+// const tasks = [
+//   {
+//     id: "1",
+//     title: "testing task",
+//     description: "testng task description",
+//     category: "work",
+//     deadline: "2024-01-15T10:00:00",
+//     completed: false,
+//     priority: "high",
+//     createdAt: "2024-01-10T08:00:00",
+//   },
+// ];
 
 // get /api/tasks - Get all tasks
 app.get("/api/tasks", (req, res) => {
-  const { category, status, search, sortBy } = req.query
+  const { category, status, search, sortBy } = req.query;
 
-  let filteredTasks = [...tasks]
+  let sql = "SELECT * FROM tasks WHERE 1=1";
+  const params = [];
 
-  // Filter by category
   if (category && category !== "all") {
-    filteredTasks = filteredTasks.filter((task) => task.category === category)
+    sql += " AND category = ?";
+    params.push(category);
   }
 
-  // Filter by status
   if (status && status !== "all") {
     if (status === "completed") {
-      filteredTasks = filteredTasks.filter((task) => task.completed)
+      sql += " AND completed = 1";
     } else if (status === "pending") {
-      filteredTasks = filteredTasks.filter((task) => !task.completed)
+      sql += " AND completed = 0";
     }
   }
 
-  // Search filter
   if (search) {
-    filteredTasks = filteredTasks.filter(
-      (task) =>
-        task.title.toLowerCase().includes(search.toLowerCase()) ||
-        task.description.toLowerCase().includes(search.toLowerCase()),
-    )
+    sql += " AND (title LIKE ? OR description LIKE ?)";
+    const keyword = `%${search}%`;
+    params.push(keyword, keyword);
   }
 
-  // Sort tasks
   if (sortBy) {
-    filteredTasks.sort((a, b) => {
-      switch (sortBy) {
-        case "deadline":
-          return new Date(a.deadline) - new Date(b.deadline)
-        case "priority":
-          const priorityOrder = { high: 3, medium: 2, low: 1 }
-          return priorityOrder[b.priority] - priorityOrder[a.priority]
-        case "created":
-          return new Date(b.createdAt) - new Date(a.createdAt)
-        default:
-          return 0
-      }
-    })
+    switch (sortBy) {
+      case "deadline":
+        sql += " ORDER BY deadline ASC";
+        break;
+      case "priority":
+        sql += ` ORDER BY 
+          CASE priority
+            WHEN 'high' THEN 3
+            WHEN 'medium' THEN 2
+            WHEN 'low' THEN 1
+            ELSE 0
+          END DESC`;
+        break;
+      case "created":
+        sql += " ORDER BY createdAt DESC";
+        break;
+    }
   }
 
-  res.json(filteredTasks)
-})
+  db.query(sql, params, (err, results) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(results);
+  });
+});
 
 // post /api/tasks
 app.post("/api/tasks", (req, res) => {
@@ -97,68 +115,86 @@ app.post("/api/tasks", (req, res) => {
     title,
     description: description || "",
     category: category || "work",
-    deadline: deadline || "",
+    deadline: deadline || null,
     completed: false,
     priority: priority || "medium",
-    createdAt: new Date().toISOString(),
+    createdAt: new Date(),
   };
 
-  tasks.push(newTask);
-  res.status(201).json(newTask);
+  const sql = `INSERT INTO tasks (id, title, description, category, deadline, completed, priority, createdAt)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?)`;
+
+  db.query(
+    sql,
+    [
+      newTask.id,
+      newTask.title,
+      newTask.description,
+      newTask.category,
+      newTask.deadline,
+      newTask.completed,
+      newTask.priority,
+      newTask.createdAt,
+    ],
+    (err) => {
+      if (err) return res.status(500).json({ error: err.message });
+      res.status(201).json(newTask);
+    }
+  );
 });
 
 // get /api/tasks/:id
 app.get("/api/tasks/:id", (req, res) => {
-  const task = tasks.find((t) => t.id === req.params.id);
-  if (!task) {
-    return res.status(404).json({ error: "Task not found" });
-  }
-  res.json(task);
+  const sql = "SELECT * FROM tasks WHERE id = ?";
+  db.query(sql, [req.params.id], (err, results) => {
+    if (err) return res.status(500).json({ error: err.message });
+    if (results.length === 0) return res.status(404).json({ error: "Task not found" });
+    res.json(results[0]);
+  });
 });
 
 // put /api/tasks/:id
 app.put("/api/tasks/:id", (req, res) => {
-  const taskIndex = tasks.findIndex((t) => t.id === req.params.id);
-  if (taskIndex === -1) {
-    return res.status(404).json({ error: "Task not found" });
-  }
-
-  const updatedTask = { ...tasks[taskIndex], ...req.body };
-  tasks[taskIndex] = updatedTask;
-  res.json(updatedTask);
+  const sql = "UPDATE tasks SET ? WHERE id = ?";
+  db.query(sql, [req.body, req.params.id], (err) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json({ message: "Task updated successfully" });
+  });
 });
 
 // delete /api/tasks/:id
 app.delete("/api/tasks/:id", (req, res) => {
-  const taskIndex = tasks.findIndex((t) => t.id === req.params.id);
-  if (taskIndex === -1) {
-    return res.status(404).json({ error: "Task not found" });
-  }
-
-  tasks.splice(taskIndex, 1);
-  res.json({ message: "Task deleted successfully" });
+  db.query("DELETE FROM tasks WHERE id = ?", [req.params.id], (err) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json({ message: "Task deleted successfully" });
+  });
 });
 
 // patch /api/tasks/:id/toggle (toggle task completion status)
 app.patch("/api/tasks/:id/toggle", (req, res) => {
-  const taskIndex = tasks.findIndex((t) => t.id === req.params.id);
-  if (taskIndex === -1) {
-    return res.status(404).json({ error: "Task not found" });
-  }
-
-  tasks[taskIndex].completed = !tasks[taskIndex].completed;
-  res.json(tasks[taskIndex]);
+  const sql = "UPDATE tasks SET completed = NOT completed WHERE id = ?";
+  db.query(sql, [req.params.id], (err) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json({ message: "Task completion toggled" });
+  });
 });
 
 // get /api/stats (Get task statistics)
 app.get("/api/stats", (req, res) => {
-  const total = tasks.length
-  const completed = tasks.filter((t) => t.completed).length
-  const pending = tasks.filter((t) => !t.completed).length
-  const overdue = tasks.filter((t) => !t.completed && t.deadline && new Date(t.deadline) < new Date()).length
+  const sql = `
+    SELECT 
+      COUNT(*) AS total,
+      SUM(completed = 1) AS completed,
+      SUM(completed = 0) AS pending,
+      SUM(completed = 0 AND deadline < NOW()) AS overdue
+    FROM tasks
+  `;
 
-  res.json({ total, completed, pending, overdue })
-})
+  db.query(sql, (err, results) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json(results[0]);
+  });
+});
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`)
