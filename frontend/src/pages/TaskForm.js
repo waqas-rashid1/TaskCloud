@@ -113,9 +113,9 @@ const TaskForm = () => {
           </div>
 
           {/* Form */}
-          <div className="card" style={{ padding: "32px" }}>
+          <div className="card">
             <form onSubmit={handleSubmit}>
-              <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+              <div className="gap-responsive" style={{ display: "flex", flexDirection: "column" }}>
                 {/* Title */}
                 <div>
                   <label
@@ -162,13 +162,7 @@ const TaskForm = () => {
                 </div>
 
                 {/* Category and Priority */}
-                <div
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: "1fr 1fr",
-                    gap: "16px",
-                  }}
-                >
+                <div className="responsive-grid-2">
                   <div>
                     <label
                       style={{
@@ -230,11 +224,11 @@ const TaskForm = () => {
                 </div>
 
                 {/* Submit Button */}
-                <div style={{ display: "flex", gap: "16px", justifyContent: "flex-end" }}>
-                  <button type="button" onClick={() => navigate("/")} className="btn btn-secondary">
+                <div className="mobile-stack" style={{ justifyContent: "flex-end" }}>
+                  <button type="button" onClick={() => navigate("/")} className="btn btn-secondary mobile-full">
                     Cancel
                   </button>
-                  <button type="submit" className="btn btn-primary" disabled={loading}>
+                  <button type="submit" className="btn btn-primary mobile-full" disabled={loading}>
                     <Save size={16} />
                     {loading ? "Saving..." : isEditing ? "Update Task" : "Create Task"}
                   </button>

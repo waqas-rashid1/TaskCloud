@@ -34,6 +34,9 @@ const Dashboard = () => {
         sortBy: sortBy,
       })
       setTasks(data)
+      // const res = await fetch("http://localhost:5000/api/tasks");
+      // data = await res.json();
+      // data.forEach(schedulePopupReminder);
     } catch (error) {
       toast.error("Failed to fetch tasks")
     } finally {
@@ -85,25 +88,14 @@ const Dashboard = () => {
 
   return (
     <div
+      className="spacing-responsive"
       style={{
         minHeight: "calc(100vh - 80px)",
-        padding: "32px 0",
         background: "linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)",
       }}
     >
       <div className="container">
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "300px 1fr",
-            gap: "32px",
-            "@media (maxWidth: 768px)": {
-              gridTemplateColumns: "1fr",
-              gap: "24px",
-            },
-          }}
-        >
-
+        <div className="responsive-grid">
           {/* Sidebar */}
           <div>
             <Sidebar stats={stats} upcomingTasks={upcomingTasks} />
@@ -111,11 +103,10 @@ const Dashboard = () => {
 
           {/* Main Content */}
           <div>
-            <div style={{ marginBottom: "24px" }}>
+            <div className="gap-responsive" style={{ marginBottom: "24px", display: "flex", flexDirection: "column" }}>
               <h1
+                className="text-responsive-lg"
                 style={{
-                  fontSize: "32px",
-                  fontWeight: "700",
                   background: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
                   WebkitBackgroundClip: "text",
                   WebkitTextFillColor: "transparent",

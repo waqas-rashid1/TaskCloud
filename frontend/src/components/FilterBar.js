@@ -21,15 +21,8 @@ const FilterBar = ({
   ]
 
   return (
-    <div className="card" style={{ padding: "24px", marginBottom: "24px" }}>
-      <div
-        style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-          gap: "16px",
-          alignItems: "end",
-        }}
-      >
+    <div className="card" style={{ marginBottom: "24px" }}>
+      <div className="responsive-grid-4">
         {/* Search */}
         <div>
           <label
