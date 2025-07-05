@@ -12,13 +12,6 @@ app.get('/', (req, res) => {
   res.send('API is working!');
 });
 
-app.get('/api/tasks', (req, res) => {
-  res.json([
-    { id: 1, title: "Build backend", completed: false },
-    { id: 2, title: "Connect to frontend", completed: false }
-  ]);
-});
-
 // Health check route
 app.get("/api/health", (req, res) => {
   res.json({ status: "OK", message: "API is running" });
