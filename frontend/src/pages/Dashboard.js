@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { toast } from "react-hot-toast"
 import FilterBar from "../components/FilterBar"
+import Sidebar from "../components/SiderBar"
 import TaskList from "../components/TaskList"
 import { taskService } from "../services/taskService"
 
@@ -101,6 +102,11 @@ const Dashboard = () => {
             },
           }}
         >
+
+          {/* Sidebar */}
+          <div>
+            <Sidebar stats={stats} upcomingTasks={upcomingTasks} />
+          </div>
 
           {/* Main Content */}
           <div>
