@@ -35,10 +35,54 @@ const tasks = [
   },
 ];
 
-// get /api/tasks
+// get /api/tasks - Get all tasks
 app.get("/api/tasks", (req, res) => {
-  res.json(tasks);
-});
+  const { category, status, search, sortBy } = req.query
+
+  let filteredTasks = [...tasks]
+
+  // Filter by category
+  if (category && category !== "all") {
+    filteredTasks = filteredTasks.filter((task) => task.category === category)
+  }
+
+  // Filter by status
+  if (status && status !== "all") {
+    if (status === "completed") {
+      filteredTasks = filteredTasks.filter((task) => task.completed)
+    } else if (status === "pending") {
+      filteredTasks = filteredTasks.filter((task) => !task.completed)
+    }
+  }
+
+  // Search filter
+  if (search) {
+    filteredTasks = filteredTasks.filter(
+      (task) =>
+        task.title.toLowerCase().includes(search.toLowerCase()) ||
+        task.description.toLowerCase().includes(search.toLowerCase()),
+    )
+  }
+
+  // Sort tasks
+  if (sortBy) {
+    filteredTasks.sort((a, b) => {
+      switch (sortBy) {
+        case "deadline":
+          return new Date(a.deadline) - new Date(b.deadline)
+        case "priority":
+          const priorityOrder = { high: 3, medium: 2, low: 1 }
+          return priorityOrder[b.priority] - priorityOrder[a.priority]
+        case "created":
+          return new Date(b.createdAt) - new Date(a.createdAt)
+        default:
+          return 0
+      }
+    })
+  }
+
+  res.json(filteredTasks)
+})
 
 // post /api/tasks
 app.post("/api/tasks", (req, res) => {

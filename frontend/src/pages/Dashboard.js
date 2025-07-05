@@ -2,8 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { toast } from "react-hot-toast"
-// import Sidebar from "../components/Sidebar"
-// import FilterBar from "../components/FilterBar"
+import FilterBar from "../components/FilterBar"
 import TaskList from "../components/TaskList"
 import { taskService } from "../services/taskService"
 
@@ -102,10 +101,6 @@ const Dashboard = () => {
             },
           }}
         >
-          {/* Sidebar */}
-          {/* <div>
-            <Sidebar stats={stats} upcomingTasks={upcomingTasks} />
-          </div> */}
 
           {/* Main Content */}
           <div>
@@ -125,7 +120,7 @@ const Dashboard = () => {
               <p style={{ color: "#6b7280", fontSize: "16px" }}>Manage and organize your tasks efficiently</p>
             </div>
 
-            {/* <FilterBar
+            <FilterBar
               searchTerm={searchTerm}
               setSearchTerm={setSearchTerm}
               selectedCategory={selectedCategory}
@@ -134,7 +129,7 @@ const Dashboard = () => {
               setSelectedStatus={setSelectedStatus}
               sortBy={sortBy}
               setSortBy={setSortBy}
-            /> */}
+            />
 
             {loading ? (
               <div style={{ textAlign: "center", padding: "48px" }}>

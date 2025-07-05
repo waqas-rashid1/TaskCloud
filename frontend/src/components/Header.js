@@ -33,7 +33,7 @@ const Header = () => {
             }}
           >
             <CheckSquare size={28} />
-            Smart Task Manager
+            TaskCloud
           </Link>
 
           <div style={{ display: "flex", gap: "16px" }}>
