@@ -1,6 +1,6 @@
 import { Link, useLocation } from "react-router-dom"
 import { useAuth } from "../contexts/AuthContext"
-import { Plus, Home, CheckSquare, User, LogOut } from "lucide-react"
+import { Plus, Home, FileCheck2, User, LogOut } from "lucide-react"
 import { useState } from "react"
 
 const Header = () => {
@@ -41,7 +41,7 @@ const Header = () => {
               gap: "8px",
             }}
           >
-            <CheckSquare size={24} />
+            <FileCheck2 size={24} color="#ffffff" />
             <span className="mobile-hide">TaskCloud</span>
           </Link>
 

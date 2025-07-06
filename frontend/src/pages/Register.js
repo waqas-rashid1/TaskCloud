@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { useAuth } from "../contexts/AuthContext"
-import { Eye, EyeOff, Mail, Lock, User, CheckSquare } from "lucide-react"
+import { Eye, EyeOff, Mail, Lock, User, FileCheck2 } from "lucide-react"
 
 const Register = () => {
   const navigate = useNavigate()
@@ -98,7 +98,7 @@ const Register = () => {
               marginBottom: "16px",
             }}
           >
-            <CheckSquare size={32} style={{ color: "#667eea" }} />
+            <FileCheck2 size={24} color="#667eea" />
             <h1
               style={{
                 fontSize: "24px",
