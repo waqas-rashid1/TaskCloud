@@ -22,7 +22,7 @@ npm install
 
 1. Open `phpMyAdmin` in XAMPP.
 2. Create a database named: `taskcloud`
-3. Import the provided SQL file from `backend/taskcloud_schema.sql` or similar.
+3. Import the provided SQL file from `backend/taskcloud.sql`.
 4. It will create tables like `users`, `tasks`.
 
 ### 3. Frontend (React)
@@ -74,7 +74,7 @@ npm start
 
 ```
 project/
-├── backend/              # Express.js backend
+├── backend/              # Node.js, Express.js backend
 │   └── server.js
 │   └── taskcloud.sql
 ├── frontend/             # React.js frontend
